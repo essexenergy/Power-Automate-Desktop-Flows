@@ -1,0 +1,16 @@
+SET Count TO 0
+LOOP WHILE (Count) < (Files.Count)
+    @@flowname: '💻 Create Local File'
+    External.RunFlow FlowId: 'c1ce0be5-3a06-ee11-8f6e-000d3a0a1cb3' @FileContent: Files[Count].FileContent @LocalDestination: $'''%TempLocation%/%Files[Count].FileName%''' @StatusCode=> StatusCode2
+            ON ERROR
+                SET StatusCode TO -1
+            END
+    Display.ShowMessageDialog.ShowMessage Title: $'''Current Item''' Message: Files[Count].FileName Icon: Display.Icon.None Buttons: Display.Buttons.OK DefaultButton: Display.DefaultButton.Button1 IsTopMost: False ButtonPressed=> ButtonPressed
+    IF StatusCode2 <> 0 THEN
+        SET StatusCode TO -1
+    END
+    Variables.IncreaseVariable Value: Count IncrementValue: 1
+END
+IF StatusCode <> 0 THEN
+    EXIT Code: 0 ErrorMessage: $'''Could not fetch files - please check that Files input variable is in correct format'''
+END
