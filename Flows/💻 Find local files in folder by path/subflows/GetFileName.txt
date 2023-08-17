@@ -1,0 +1,8 @@
+
+FUNCTION GetFileName GLOBAL
+    IF Count = Files.Count THEN
+        Text.AppendLine Text: FileNames LineToAppend: $'''\"%CurrentName%\"]''' Result=> FileNames
+    ELSE IF Count < Files.Count THEN
+        Text.AppendLine Text: FileNames LineToAppend: $'''\"%CurrentName%\",''' Result=> FileNames
+    END
+END FUNCTION
