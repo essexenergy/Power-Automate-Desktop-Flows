@@ -1,0 +1,32 @@
+
+FUNCTION Main_copy GLOBAL
+    /#  PURPOSE
+This operation finds files within a folder using search or name pattern match.#/
+    /# INPUT
+Search Filter (string): Used to match file names
+Search Folder (string): Absolute local path to folder#/
+    /# OUTPUT
+Status Code (Integer) - Indicates the flow status on termination.
+ 0: Success
+-1: Failure#/
+    # File Names (Array) - Stringified array containing all file names found in folder matching the search pattern
+    Folder.GetFiles Folder: SearchFolder FileFilter: SearchFilter IncludeSubfolders: False FailOnAccessDenied: True SortBy1: Folder.SortBy.NoSort SortDescending1: False SortBy2: Folder.SortBy.NoSort SortDescending2: False SortBy3: Folder.SortBy.NoSort SortDescending3: False Files=> Files
+ON ERROR
+    SET StatusCode TO -1
+    THROW ERROR
+END
+    SET FileNames TO $'''['''
+    SET Count TO 1
+    LOOP FOREACH CurrentItem IN Files
+        IF GetFullName = $'''true''' THEN
+            Text.Replace Text: CurrentItem.FullName TextToFind: $'''\\''' IsRegEx: False IgnoreCase: False ReplaceWith: $'''/''' ActivateEscapeSequences: False Result=> CurrentName
+            CALL GetFullName
+        END
+        IF GetFullName = $'''false''' THEN
+            Text.Replace Text: CurrentItem.Name TextToFind: $'''\\''' IsRegEx: False IgnoreCase: False ReplaceWith: $'''/''' ActivateEscapeSequences: False Result=> CurrentName
+            CALL GetFileName
+        END
+        Variables.IncreaseVariable Value: Count IncrementValue: 1
+    END
+    DISABLE Display.ShowMessageDialog.ShowMessage Title: $'''Files''' Message: FileNames Icon: Display.Icon.None Buttons: Display.Buttons.OK DefaultButton: Display.DefaultButton.Button1 IsTopMost: False ButtonPressed=> ButtonPressed
+END FUNCTION

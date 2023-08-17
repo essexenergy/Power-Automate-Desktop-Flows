@@ -1,0 +1,18 @@
+
+FUNCTION CleanUp GLOBAL
+    File.Delete Files: ZIPLocation
+    ON ERROR
+        SET StatusCode TO -3
+    END
+    SET Count TO 0
+    LOOP WHILE (Count) < (Files.Count)
+        File.Delete Files: $'''%TempLocation%\\%Files[Count].FileName%'''
+                ON ERROR
+                    SET StatusCode TO -3
+                END
+        Variables.IncreaseVariable Value: Count IncrementValue: 1
+    END
+    DISABLE IF StatusCode <> 0 THEN
+        DISABLE EXIT Code: 0 ErrorMessage: $'''Could clean up temp operations - please clean manually'''
+    DISABLE END
+END FUNCTION
